@@ -130,7 +130,7 @@ class Policy(AbstractPolicy):
         torch_state = torch.from_numpy(self.current_state)
         if self.cuda:
             torch_state = torch_state.cuda()
-        q_values = self.model(Variable(torch_state, volatile=True).type(torch.FloatTensor)).data
+        q_values = self.model(Variable(torch_state, volatile=True).type(torch.cuda.FloatTensor)).data
 
         if epsilon > random():
             # Random Action
@@ -146,7 +146,7 @@ class Policy(AbstractPolicy):
             for idx in range(self.params.number_of_agents):
                 values = np.eye(len(self.action_mapping))
                 self.params.viz.bar(X=values, win='distribution_agent_' + str(idx),
-                                    Y=q_values[idx].numpy(),
+                                    Y=q_values[idx].cpu().numpy(),
                                     opts=dict(
                                         title='Agent ' + str(idx) + '\'s distribution',
                                         stacked=False,
