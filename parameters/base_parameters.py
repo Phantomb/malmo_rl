@@ -22,7 +22,7 @@ parser.add_argument('--verbose_prints', default=False, action='store_true',
                     help='Enable verbose debug prints for more informative details.')
 parser.add_argument('--available_actions', default=['move 1', 'turn -1', 'turn 1'], nargs='+',
                     help='Space separated list of available actions. E.g. "\'move 1\' \'turn -1\'..."')
-parser.add_argument('--ms_per_tick', default=100, type=int,
+parser.add_argument('--ms_per_tick', default=50, type=int,
                     help='Delay between ticks, this is a setting for the Malmo simulator.')
 parser.add_argument('--checkpoint_interval', type=int, default=5000)
 parser.add_argument('--save_name', type=str, help='The filename given to the saved checkpoint.')
