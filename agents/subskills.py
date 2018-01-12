@@ -28,29 +28,30 @@ class Agent(BaseAgent):
         self.number_of_steps = 0
 
     def _restart_world(self) -> None:
-        if not self.game_running:
-            self._initialize_malmo_communication()
+        self._initialize_malmo_communication()
 
-            mission_file = './agents/domains/subskills.xml'
-            with open(mission_file, 'r') as f:
-                logging.debug('Agent[' + str(self.agent_index) + ']: Loading mission from %s.', mission_file)
-                mission_xml = f.read()
+        mission_file = './agents/domains/subskills.xml'
+        with open(mission_file, 'r') as f:
+            logging.debug('Agent[' + str(self.agent_index) + ']: Loading mission from %s.', mission_file)
+            mission_xml = f.read()
 
-                success = False
-                while not success:
-                    self._load_mission_from_xml(mission_xml)
-                    success = self._wait_for_mission_to_begin()
+            success = False
+            while not success:
+                mission = self._load_mission_from_xml(mission_xml)
+                self._load_mission_from_missionspec(mission)
+                success = self._wait_for_mission_to_begin()
 
-                self.game_running = True
+            self.game_running = True
 
         # Set agent to random location, which depends on the current experiment
+        # For: skills_nav1
         x = random.randint(-4,4) + 0.5
         y = 227.0
         z = random.randint(-4,4) + 0.5
         logging.debug('Agent[' + str(self.agent_index) + ']:  restarting at position x: ' + str(x) + ' z: ' + str(z))
         self.agent_host.sendCommand('chat /tp Cristina ' + str(x) + ' ' + str(y) + ' ' + str(z) + ' -180.0 0.0')
 
-        time.sleep(1)
+        time.sleep(2)
         # Generate random int between 0 and 3
         turn_direction = random.randint(0, 3)
         self.agent_host.sendCommand('turn ' + str(turn_direction))
@@ -67,6 +68,7 @@ class Agent(BaseAgent):
         self.number_of_steps += 1
 
         # Check if we have succeeded in finding the goal
+        # For: skills_nav1
         if(grid[4] == u'gold_block'):
             return self.reward_from_success, True, state, False
 
