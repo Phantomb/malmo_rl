@@ -1,6 +1,6 @@
 import argparse
 
-parser = argparse.ArgumentParser(description='')
+parser = argparse.ArgumentParser(description='', conflict_handler='resolve')
 parser.add_argument('policy', nargs=1)
 parser.add_argument('agent', nargs=1)
 parser.add_argument('--malmo_ports', type=int, nargs='+', default=None,
