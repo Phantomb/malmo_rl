@@ -12,10 +12,18 @@ from torch.autograd import Variable
 from policies.models.dqn import DQN
 from policies.policy import Policy as AbstractPolicy
 from utilities import helpers
-from utilities.parallel_replay_memory import ParallelReplayMemory
+from utilities.replay_memory import ParallelReplayMemory
 from utilities.adamw_optimizer import AdamW
 
-# TODO: A2C.
+
+def exp_lr_scheduler(optimizer, epoch, lr_decay=0.1, lr_decay_epoch=7):
+    """Decay learning rate by a factor of lr_decay every lr_decay_epoch epochs"""
+    if epoch % lr_decay_epoch:
+        return optimizer
+
+    for param_group in optimizer.param_groups:
+        param_group['lr'] *= lr_decay
+    return optimizer
 
 
 class Policy(AbstractPolicy):
@@ -34,7 +42,7 @@ class Policy(AbstractPolicy):
             self.target_model = self.target_model.cuda()
         self.update_target_network()
 
-        self.optimizer = AdamW(self.target_model.parameters(), lr=self.params.lr, eps=1.5e-4)
+        self.optimizer = optim.RMSprop(self.target_model.parameters(), lr=self.params.lr, eps=0.01, alpha=0.95)
         self.criterion = torch.nn.SmoothL1Loss()
         self.replay_memory = ParallelReplayMemory(self.params)
 
@@ -44,18 +52,18 @@ class Policy(AbstractPolicy):
         self.previous_actions: List[int] = None
         self.previous_states: np.ndarray = None
 
-        self.current_state = np.zeros(
-            (self.params.number_of_agents, self.params.state_size, self.params.image_width, self.params.image_height),
-            dtype=np.float32)
+        self.current_state: np.ndarray = np.zeros(
+            (self.params.number_of_agents, self.params.state_size * (3 if self.params.retain_rgb else 1),
+             self.params.image_width, self.params.image_height), dtype=np.float32)
 
         if params.resume:
             self.load_state()
 
     def create_model(self) -> torch.nn.Module:
-        return DQN(len(self.action_mapping), self.params.state_size)
+        return DQN(len(self.action_mapping), self.params.state_size * (3 if self.params.retain_rgb else 1))
 
     def update_observation(self, rewards: List[float], terminations: List[bool],
-                           terminations_due_to_timeout: List[bool],
+                           terminations_due_to_timeout: List[bool], success: List[bool],
                            is_train: bool) -> None:
         # Normalizing reward forces all Q values to the range of [-1, 1]. This tends to help convergence.
         for idx, reward in enumerate(rewards):
@@ -70,27 +78,31 @@ class Policy(AbstractPolicy):
 
         if self.previous_actions is not None and is_train:
             self.replay_memory.add_observation(self.previous_states, self.previous_actions, rewards,
-                                               [int(terminal) for terminal in terminations],
-                                               terminations_due_to_timeout)
+                                               terminations, terminations_due_to_timeout, success)
 
         for idx, terminal in enumerate(terminations):
-            if terminal:
+            if terminal or terminal is None:
                 self.current_state[idx] = np.zeros(
-                    (self.params.state_size, self.params.image_width, self.params.image_height), dtype=np.float32)
+                    (self.params.state_size * (3 if self.params.retain_rgb else 1), self.params.image_width,
+                     self.params.image_height), dtype=np.float32)
 
     def get_action(self, states: List[np.ndarray], is_train: bool) -> List[str]:
         if self.params.viz is not None:
             # Send screen of each agent to visdom.
             images = np.zeros((self.params.number_of_agents, 3, 84, 84))
             for idx in range(self.params.number_of_agents):
-                images[idx, 1, :, :] = states[idx]
+                if self.params.retain_rgb:
+                    images[idx, :, :, :] = states[idx]
+                else:
+                    images[idx, 1, :, :] = states[idx]
                 self.params.viz.image(images[idx], win='state_agent_' + str(idx),
                                       opts=dict(title='Agent ' + str(idx) + '\'s state'))
 
         states = np.array(states)
 
-        self.current_state[:, :(self.params.state_size - 1)] = self.current_state[:, 1:]
-        self.current_state[:, -1] = states
+        self.current_state[:, :(self.params.state_size - 1) * (3 if self.params.retain_rgb else 1)] = \
+            self.current_state[:, 1 * (3 if self.params.retain_rgb else 1):]
+        self.current_state[:, -1 * (3 if self.params.retain_rgb else 1):] = states
 
         if is_train:
             # Decrease epsilon value
@@ -109,6 +121,8 @@ class Policy(AbstractPolicy):
 
         if is_train:
             self.previous_actions, self.previous_states = actions.numpy().tolist(), states
+            if not self.params.retain_rgb:
+                self.previous_states = np.expand_dims(self.previous_states, dim=0)
 
         string_actions = []
         for action in actions:
@@ -166,13 +180,21 @@ class Policy(AbstractPolicy):
             return {}
 
         batch_state, batch_action, batch_reward, batch_terminal, batch_next_state, indices = self.replay_memory.sample()
-        batch_state = Variable(torch.from_numpy(np.array(batch_state))).type(torch.FloatTensor)
+        batch_state = np.reshape(np.array(batch_state), (self.params.batch_size,
+                                                         self.params.state_size * (3 if self.params.retain_rgb else 1),
+                                                         self.params.image_width, self.params.image_height))
+
+        batch_state = Variable(torch.from_numpy(batch_state)).type(torch.FloatTensor)
         # batch_action = List[a_1, a_2, ..., a_batch_size].
         # As a tensor it has a single dimension length of batch_size. Performing unsqueeze(-1) will add a dimension at
         # the end, making the dimensions 32x1 -> [[a_1], [a_2], ..., [a_batch_size]].
         batch_action = Variable(torch.from_numpy(np.array(batch_action)).unsqueeze(-1)).type(torch.LongTensor)
         batch_reward = Variable(torch.from_numpy(np.array(batch_reward))).type(torch.FloatTensor)
-        batch_next_state = Variable(torch.from_numpy(np.array(batch_next_state))).type(torch.FloatTensor)
+        batch_next_state = np.reshape(np.array(batch_next_state),
+                                      (self.params.batch_size,
+                                       self.params.state_size * (3 if self.params.retain_rgb else 1),
+                                       self.params.image_width, self.params.image_height))
+        batch_next_state = Variable(torch.from_numpy(batch_next_state)).type(torch.FloatTensor)
         # not_done_mask contains 0 for terminal states and 1 for non-terminal states.
         not_done_mask = Variable(torch.from_numpy(1 - np.array(batch_terminal))).type(torch.FloatTensor)
         if self.cuda:
@@ -197,6 +219,7 @@ class Policy(AbstractPolicy):
                 param.grad.data.clamp_(-self.params.gradient_clipping, self.params.gradient_clipping)
 
         self.optimizer.step()
+        self.optimizer = exp_lr_scheduler(self.optimizer, epoch=self.step, lr_decay=0.99999, lr_decay_epoch=1)
 
         return {'loss': loss.data[0], 'td_error': td_error.mean()}
 

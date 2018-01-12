@@ -1,6 +1,6 @@
 import argparse
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Dict
 
 import numpy as np
 
@@ -20,7 +20,8 @@ class Policy(ABC):
         pass
 
     @abstractmethod
-    def update_observation(self, reward: float, terminal: bool, terminal_due_to_timeout: bool, is_train: bool) -> None:
+    def update_observation(self, reward: float, terminal: bool, terminal_due_to_timeout: bool, success: bool,
+                           is_train: bool) -> None:
         pass
 
     @abstractmethod
@@ -30,3 +31,6 @@ class Policy(ABC):
     @abstractmethod
     def load_state(self) -> None:
         pass
+
+    def train(self) -> Dict[str, float]:
+        return {}
