@@ -28,3 +28,13 @@ parser.add_argument('--save_name', type=str, help='The filename given to the sav
 parser.add_argument('--no_cuda', default=False, action='store_true', help='When flag exists, cuda will not be used.')
 parser.add_argument('--resume', default=False, action='store_true',
                     help='Resume training of previous model based on save_name.')
+
+
+# subskill domain specific parameters:
+
+# override default available actions with added skills
+parser.add_argument('--available_actions', default=['move 1', 'turn -1', 'turn 1', #, 'skill_nav1', 'skill_nav2', 'skill_pickup', 'skill_place', 'skill_break'
+                                            ], nargs='+',
+                    help='Space separated list of available actions. E.g. "\'move 1\' \'turn -1\'..."')
+parser.add_argument('--experiment', default='tworoom',
+                    help='Choose from the five subskills (nav1, nav2, pickup, place, break), or the \'tworoom\' or \'threeroom\' domain')
