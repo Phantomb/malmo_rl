@@ -28,7 +28,9 @@ class Agent(BaseAgent):
         self.number_of_steps = 0
         self.touching_block = False
 
-    def _restart_world(self) -> None:
+    def _restart_world(self, is_train: bool) -> None:
+        del is_train
+
         self._initialize_malmo_communication()
 
         mission_file = './agents/domains/subskills.xml'
