@@ -16,16 +16,6 @@ from utilities.replay_memory import ParallelReplayMemory
 from utilities.adamw_optimizer import AdamW
 
 
-def exp_lr_scheduler(optimizer, epoch, lr_decay=0.1, lr_decay_epoch=7):
-    """Decay learning rate by a factor of lr_decay every lr_decay_epoch epochs"""
-    if epoch % lr_decay_epoch:
-        return optimizer
-
-    for param_group in optimizer.param_groups:
-        param_group['lr'] *= lr_decay
-    return optimizer
-
-
 class Policy(AbstractPolicy):
     def __init__(self, params: argparse) -> None:
         super(Policy, self).__init__(params)
@@ -93,9 +83,9 @@ class Policy(AbstractPolicy):
                      self.params.image_height), dtype=np.float32)
 
     def get_action(self, states: List[np.ndarray], is_train: bool) -> List[str]:
-        if self.params.viz is not None:
+        if self.params.viz is not None and self.step % self.params.visualization_frequency == 0:
             # Send screen of each agent to visdom.
-            images = np.zeros((self.params.number_of_agents, 3, 84, 84))
+            images = np.zeros((self.params.number_of_agents, 3, self.params.image_width, self.params.image_height))
             for idx in range(self.params.number_of_agents):
                 if self.params.retain_rgb:
                     images[idx, :, :, :] = states[idx]
@@ -146,7 +136,7 @@ class Policy(AbstractPolicy):
         else:
             actions = q_values.max(1)[1]
 
-        if self.params.viz is not None:
+        if self.params.viz is not None and self.step % self.params.visualization_frequency == 0:
             # Send Q distribution of each agent to visdom.
             for idx in range(self.params.number_of_agents):
                 values = np.eye(len(self.action_mapping))
@@ -219,7 +209,6 @@ class Policy(AbstractPolicy):
                 param.grad.data.clamp_(-self.params.gradient_clipping, self.params.gradient_clipping)
 
         self.optimizer.step()
-        self.optimizer = exp_lr_scheduler(self.optimizer, epoch=self.step, lr_decay=0.99999, lr_decay_epoch=1)
 
         return {'loss': loss.data[0], 'td_error': td_error.mean()}
 
