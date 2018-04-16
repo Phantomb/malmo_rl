@@ -21,6 +21,7 @@
     <ServerHandlers>
       <FlatWorldGenerator destroyAfterUse="true" forceReset="false" generatorString="3;7,220*1,5*3,2;3;,biome_1" seed=""/>
       <DrawingDecorator>
+      <!-- subskill_nav1 -->
         <DrawCuboid type="bedrock" x1="-5" x2="5" y1="226" y2="236" z1="-5" z2="6"/>
       </DrawingDecorator>
       <DrawingDecorator>
@@ -38,6 +39,7 @@
       <DrawingDecorator>
         <DrawCuboid type="gold_block" x1="-3" x2="-4" y1="226" y2="226" z1="6" z2="6"/>
       </DrawingDecorator>
+      <!-- subskill_nav2 -->
       <DrawingDecorator>
         <DrawCuboid type="bedrock" x1="-5" x2="5" y1="226" y2="236" z1="8" z2="19"/>
       </DrawingDecorator>
@@ -71,6 +73,7 @@
       <DrawingDecorator>
         <DrawCuboid type="soul_sand" x1="2" x2="2" y1="227" y2="229" z1="13" z2="13"/>
       </DrawingDecorator>
+      <!-- subskill_pickup -->
       <DrawingDecorator>
         <DrawCuboid type="bedrock" x1="-5" x2="5" y1="226" y2="236" z1="21" z2="32"/>
       </DrawingDecorator>
@@ -80,6 +83,7 @@
       <DrawingDecorator>
         <DrawBlock type="gold_block" x="0" y="227" z="26"/>
       </DrawingDecorator>
+      <!-- subskill_break -->
       <DrawingDecorator>
         <DrawCuboid type="bedrock" x1="-5" x2="5" y1="226" y2="236" z1="34" z2="45"/>
       </DrawingDecorator>
@@ -95,6 +99,7 @@
       <DrawingDecorator>
         <DrawCuboid type="snow" x1="-3" x2="-4" y1="230" y2="230" z1="44" z2="44"/>
       </DrawingDecorator>
+      <!-- subskill_place -->
       <DrawingDecorator>
         <DrawCuboid type="bedrock" x1="-5" x2="5" y1="226" y2="236" z1="47" z2="58"/>
       </DrawingDecorator>
@@ -113,6 +118,7 @@
       <DrawingDecorator>
         <DrawCuboid type="gold_block" x1="-3" x2="-4" y1="226" y2="226" z1="58" z2="58"/>
       </DrawingDecorator>
+      <!-- 2room -->
       <DrawingDecorator>
         <DrawCuboid type="bedrock" x1="8" x2="18" y1="226" y2="236" z1="-5" z2="6"/>
       </DrawingDecorator>
@@ -143,6 +149,7 @@
       <DrawingDecorator>
         <DrawCuboid type="gold_block" x1="10" x2="9" y1="226" y2="226" z1="17" z2="17"/>
       </DrawingDecorator>
+      <!-- 3room -->
       <DrawingDecorator>
         <DrawCuboid type="bedrock" x1="21" x2="31" y1="226" y2="236" z1="-5" z2="6"/>
       </DrawingDecorator>
@@ -250,6 +257,7 @@
       <!--AgentQuitFromTouchingBlockType>
           <Block type="gold_block" description="found_goal" />
         </AgentQuitFromTouchingBlockType-->
+      <!-- episode length is 30 for single DSNs, 60 for 2-room, 100 for 3-room -->
       <!--AgentQuitFromReachingCommandQuota description="command_quota_reached" total="100"/-->
     </AgentHandlers>
   </AgentSection>
