@@ -56,7 +56,7 @@ class Agent(BaseAgent):
         msg = world_state.observations[-1].text
         observations = json.loads(msg)
         grid = observations.get(u'floor3x3', 0)
-        yaw = super(Agent, self)._get_direction_from_yaw(observations.get(u'Yaw', 0)
+        yaw = super(Agent, self)._get_direction_from_yaw(observations.get(u'Yaw', 0))
 
         # Check if the agent is facing the block
         # And If the agent executed action 'attack 1', the agent succeeded
