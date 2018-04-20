@@ -26,7 +26,7 @@
         <DrawCuboid type="bedrock" x1="-5" x2="5" y1="226" y2="236" z1="-5" z2="6"/>
         <DrawCuboid type="air" x1="-4" x2="4" y1="227" y2="236" z1="-4" z2="4"/>
       <!-- The goal block -->
-        <DrawBlock type="gold_block" x="0" y="227" z="0"/>
+        <DrawCuboid type="gold_block" x1="0" y1="227" z1="0" x1="0" y1="228" z1="0"/>
       </DrawingDecorator>
       <ServerQuitWhenAnyAgentFinishes />
     </ServerHandlers>

@@ -26,11 +26,19 @@
         <DrawCuboid type="bedrock" x1="-5" x2="5" y1="226" y2="236" z1="-5" z2="6"/>
         <DrawCuboid type="air" x1="-4" x2="4" y1="227" y2="236" z1="-4" z2="4"/>
         <DrawCuboid type="grass" x1="-5" x2="5" y1="226" y2="226" z1="-5" z2="5"/>
-      <!-- RoomGoal -->
+        <!-- RoomGoal - New version -->
+        <DrawCuboid type="gold_block" x1="-2" x2="-5" y1="226" y2="230" z1="6" z2="7"/>
+        <DrawCuboid type="air" x1="-3" x2="-4" y1="227" y2="229" z1="5" z2="6"/>
+        <DrawCuboid type="snow" x1="-3" x2="-4" y1="230" y2="230" z1="5" z2="5"/>
+        <DrawBlock x="-3" y="229" z="6" type="torch" face="WEST"/>
+        <DrawBlock x="-4" y="229" z="6" type="torch" face="EAST"/>
+      
+        <!-- RoomGoal - Old version
         <DrawCuboid type="air" x1="-3" x2="-4" y1="227" y2="229" z1="5" z2="6"/>
         <DrawCuboid type="wool" x1="-3" x2="-4" y1="227" y2="230" z1="7" z2="7"/>
         <DrawCuboid type="snow" x1="-3" x2="-4" y1="230" y2="230" z1="5" z2="5"/>
         <DrawCuboid type="gold_block" x1="-3" x2="-4" y1="226" y2="226" z1="6" z2="6"/>
+        -->
 
         <!-- Pillars -->
         <DrawCuboid type="soul_sand" x1="3" x2="3" y1="227" y2="229" z1="-4" z2="-4"/>
