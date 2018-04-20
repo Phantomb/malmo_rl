@@ -24,21 +24,11 @@
       <!-- RoomBase -->
       <DrawingDecorator>
         <DrawCuboid type="bedrock" x1="-5" x2="5" y1="226" y2="236" z1="-5" z2="6"/>
-      </DrawingDecorator>
-      <DrawingDecorator>
         <DrawCuboid type="air" x1="-4" x2="4" y1="227" y2="236" z1="-4" z2="4"/>
-      </DrawingDecorator>
       <!-- The goal with the lapis blocks -->
-      <DrawingDecorator>
         <DrawCuboid type="air" x1="-3" x2="-4" y1="227" y2="229" z1="5" z2="6"/>
-      </DrawingDecorator>
-      <DrawingDecorator>
         <DrawCuboid type="sand" x1="-3" x2="-4" y1="227" y2="230" z1="7" z2="7"/>
-      </DrawingDecorator>
-      <DrawingDecorator>
         <DrawCuboid type="snow" x1="-3" x2="-4" y1="230" y2="230" z1="5" z2="5"/>
-      </DrawingDecorator>
-      <DrawingDecorator>
         <DrawCuboid type="gold_block" x1="-3" x2="-4" y1="226" y2="226" z1="6" z2="6"/>
       </DrawingDecorator>
       <ServerQuitWhenAnyAgentFinishes />
