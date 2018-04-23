@@ -42,7 +42,7 @@ class Agent(BaseAgent):
 
             self.game_running = True
 
-        self.touching_block: bool = False
+        # self.touching_block: bool = False
 
         while True:
             # Ensure that we don't start directly next to the block that is centered on x=0.5 z=0.5
@@ -58,28 +58,13 @@ class Agent(BaseAgent):
 
     def _manual_reward_and_terminal(self, action_command: str, reward: float, terminal: bool, state: np.ndarray,
                                     world_state) -> \
-            Tuple[float, bool, np.ndarray, bool, bool]:  # returns: reward, terminal, state, timeout, success
-        msg = world_state.observations[-1].text
-        observations = json.loads(msg)
-        grid = observations.get(u'floor3x3', 0)
-        yaw = super(Agent, self)._get_direction_from_yaw(observations.get(u'Yaw', 0))
+            Tuple[float, bool, np.ndarray, bool, bool]:  # returns: reward, terminal, state, timeout, success.
+        del world_state  # Not in use here.
 
-        # Check if the agent was already touching the block
-        if self.touching_block:
-            # Check if the agent is facing the block
-            if(((grid[10] == u'gold_block' and yaw == 'north')  or 
-                (grid[14] == u'gold_block' and yaw == 'east' )  or 
-                (grid[16] == u'gold_block' and yaw == 'south')  or
-                (grid[12] == u'gold_block' and yaw == 'west' )) and
-                action_command == 'move 1'):
-                # If the agent executed dummy action 'move 1', the agent succeeded
-                return self.reward_from_success, True, state, False, True
+        if reward > 0:
+            # Reached goal successfully.
+            return self.reward_from_success, True, state, False, True
 
-        self.touching_block:bool = (grid[10] == u'gold_block' or
-                                    grid[14] == u'gold_block' or
-                                    grid[16] == u'gold_block' or
-                                    grid[12] == u'gold_block')
-                
         # Since basic agents don't have the notion of time, hence death due to timeout breaks the markovian assumption
         # of the problem. By setting terminal_due_to_timeout, different agents can decide if to learn or not from these
         # states, thus ensuring a more robust solution and better chances of convergence.
@@ -87,3 +72,36 @@ class Agent(BaseAgent):
             return -1, True, state, True, False
 
         return -1, False, state, False, False
+
+    # Old goal check method that keeps the control in this method, instead of relegating it to malmo via the xml. 
+    # def _manual_reward_and_terminal(self, action_command: str, reward: float, terminal: bool, state: np.ndarray,
+    #                                 world_state) -> \
+    #         Tuple[float, bool, np.ndarray, bool, bool]:  # returns: reward, terminal, state, timeout, success
+    #     msg = world_state.observations[-1].text
+    #     observations = json.loads(msg)
+    #     grid = observations.get(u'floor3x3', 0)
+    #     yaw = super(Agent, self)._get_direction_from_yaw(observations.get(u'Yaw', 0))
+
+    #     # Check if the agent was already touching the block
+    #     if self.touching_block:
+    #         # Check if the agent is facing the block
+    #         if(((grid[10] == u'gold_block' and yaw == 'north')  or 
+    #             (grid[14] == u'gold_block' and yaw == 'east' )  or 
+    #             (grid[16] == u'gold_block' and yaw == 'south')  or
+    #             (grid[12] == u'gold_block' and yaw == 'west' )) and
+    #             action_command == 'move 1'):
+    #             # If the agent executed dummy action 'move 1', the agent succeeded
+    #             return self.reward_from_success, True, state, False, True
+
+    #     self.touching_block:bool = (grid[10] == u'gold_block' or
+    #                                 grid[14] == u'gold_block' or
+    #                                 grid[16] == u'gold_block' or
+    #                                 grid[12] == u'gold_block')
+                
+    #     # Since basic agents don't have the notion of time, hence death due to timeout breaks the markovian assumption
+    #     # of the problem. By setting terminal_due_to_timeout, different agents can decide if to learn or not from these
+    #     # states, thus ensuring a more robust solution and better chances of convergence.
+    #     if reward < -5:
+    #         return -1, True, state, True, False
+
+    #     return -1, False, state, False, False
