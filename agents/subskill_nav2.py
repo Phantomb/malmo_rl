@@ -17,7 +17,7 @@ class Agent(BaseAgent):
 
         # Experiment Parameters
         self.experiment_id: str = 'subskill_nav2'
-        self.reward_from_success = 20
+        self.reward_from_success = 0 # old value: 20
         self.supported_actions = [
             'move 1',
             'turn -1',
