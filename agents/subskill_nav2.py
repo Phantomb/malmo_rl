@@ -36,7 +36,7 @@ class Agent(BaseAgent):
             x = random.randint(-4, 4) + 0.5
             z = random.randint(-4, 4) + 0.5
             if (x != 3.5 or z != -3.5) and (x != -2.5 or z != -2.5) and (x != -0.5 or z != 2.5) and (x != 2.5 or z != 0.5):
-            break
+                break
         y = 227.0
         pitch = 25.0 
         yaw = random.randint(0, 3) * 90
