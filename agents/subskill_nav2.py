@@ -29,6 +29,18 @@ class Agent(BaseAgent):
 
         self._initialize_malmo_communication()
 
+        # Set agent to random location and yaw, slightly lowered pitch to help see blocks near feet
+        while True:
+            # Ensure that we don't start directly on a pillar 
+            # p1=(3.5, 03.5) p2=(-2.5, -2.5) p3=(-0.5, 2.5) p4=(2.5, 0.5)
+            x = random.randint(-4, 4) + 0.5
+            z = random.randint(-4, 4) + 0.5
+            if (x != 3.5 or z != -3.5) and (x != -2.5 or z != -2.5) and (x != -0.5 or z != 2.5) and (x != 2.5 or z != 0.5):
+            break
+        y = 227.0
+        pitch = 25.0 
+        yaw = random.randint(0, 3) * 90
+
         mission_file = './agents/domains/subskill_nav2.xml'
         with open(mission_file, 'r') as f:
             logging.debug('Agent[' + str(self.agent_index) + ']: Loading mission from %s.', mission_file)
@@ -37,17 +49,12 @@ class Agent(BaseAgent):
             success = False
             while not success:
                 mission = self._load_mission_from_xml(mission_xml)
+                mission.startAtWithPitchAndYaw(x, y, z, pitch, yaw)
+
                 self._load_mission_from_missionspec(mission)
                 success = self._wait_for_mission_to_begin()
 
             self.game_running = True
-
-        # Set agent to random location and yaw
-        x = random.randint(-4,4) + 0.5
-        y = 227.0
-        z = random.randint(-4,4) + 0.5
-        turn_direction = random.randint(0, 3) * 90
-        self.agent_host.sendCommand('chat /tp Agent ' + str(x) + ' ' + str(y) + ' ' + str(z) + ' ' + str(turn_direction) + ' 0.0')
 
     def _manual_reward_and_terminal(self, action_command: str, reward: float, terminal: bool, state: np.ndarray,
                                     world_state) -> \
