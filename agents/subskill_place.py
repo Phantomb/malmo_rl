@@ -22,7 +22,7 @@ class Agent(BaseAgent):
             'move 1',
             'turn -1',
             'turn 1',
-            'attack 1'
+            'discardCurrentItem'
         ]
 
     def _restart_world(self, is_train: bool) -> None:
@@ -46,23 +46,35 @@ class Agent(BaseAgent):
             while not success:
                 mission = self._load_mission_from_xml(mission_xml)
                 mission.startAtWithPitchAndYaw(x, y, z, pitch, yaw)
-                
+
                 self._load_mission_from_missionspec(mission)
                 success = self._wait_for_mission_to_begin()
 
             self.game_running = True
 
+    def perform_action(self, action_command: str, is_train: bool) -> Tuple[float, bool, np.ndarray, bool, bool]:
+        # overload super's perform_action() to check for discarding an item
+
+        if action_command == 'discardCurrentItem':
+            # Only allow discarding if we are at the goal
+            world_state = self.agent_host.peekWorldState()
+            observations = json.loads(world_state.observations[-1].text)
+            grid = observations.get(u'floor3x3', 0)
+            yaw = super(Agent, self)._get_direction_from_yaw(observations.get(u'Yaw', 0))
+
+            if (grid[4] == "gold_block" or grid[7] == "gold_block") and yaw == 'south':
+                logging.error('Not an error: The agent can discard in the proper situation. Remove this message if it works.')
+            else: action_command = 'jump 1'
+
+        super(Agent,self).perform_action(action_command, is_train)
+
     def _manual_reward_and_terminal(self, action_command: str, reward: float, terminal: bool, state: np.ndarray,
                                     world_state) -> \
             Tuple[float, bool, np.ndarray, bool, bool]:  # returns: reward, terminal, state, timeout, success
-        msg = world_state.observations[-1].text
-        observations = json.loads(msg)
-        grid = observations.get(u'floor3x3', 0)
-        yaw = super(Agent, self)._get_direction_from_yaw(observations.get(u'Yaw', 0))
-
-        # Check if the agent is facing the block
-        # And If the agent executed action 'attack 1', the agent succeeded
-        if ((grid[7] == u'gold_block' or grid[4] == u'gold_block') and yaw == 'south' and action_command == 'attack 1'):
+        del world_state
+        
+        # If the agent executed action 'discardCurrentItem', the agent succeeded
+        if action_command == 'discardCurrentItem':
             return self.reward_from_success, True, state, False, True
 
         # Since basic agents don't have the notion of time, hence death due to timeout breaks the markovian assumption

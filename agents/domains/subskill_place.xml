@@ -54,6 +54,11 @@
       </VideoProducer>
       <ObservationFromFullStats />
       <DiscreteMovementCommands autoFall="true"/>
+      <InventoryCommands>
+        <ModifierList type="allow-list">
+          <command>discardCurrentItem</command>
+        </ModifierList>
+      </ContinuousMovementCommands>
         <RewardForMissionEnd rewardForDeath="-10000">
             <!-- <Reward description="found_goal" reward="20"/> -->
             <Reward description="command_quota_reached" reward="-5"/>
