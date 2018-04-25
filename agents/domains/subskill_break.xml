@@ -52,6 +52,7 @@
         <Height>600</Height>
       </VideoProducer>
       <ObservationFromFullStats />
+      <ObservationFromRay/>
       <DiscreteMovementCommands autoFall="true"/>
         <RewardForMissionEnd rewardForDeath="-10000">
             <!-- <Reward description="found_goal" reward="20"/> -->

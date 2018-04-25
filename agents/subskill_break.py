@@ -37,6 +37,7 @@ class Agent(BaseAgent):
         pitch = 25.0 
         yaw = random.randint(0, 3) * 90
         
+        
         mission_file = './agents/domains/subskill_break.xml'
         with open(mission_file, 'r') as f:
             logging.debug('Agent[' + str(self.agent_index) + ']: Loading mission from %s.', mission_file)
@@ -52,17 +53,26 @@ class Agent(BaseAgent):
 
             self.game_running = True
 
+    def perform_action(self, action_command: str, is_train: bool) -> Tuple[float, bool, np.ndarray, bool, bool]:
+        # overload super's perform_action() to check for attack actions
+
+        if action_command == 'attack 1':
+            # Only allow an attack if we target the lapis block
+            world_state = self.agent_host.peekWorldState()
+            los = json.loads(world_state.observations[-1].text).get(u'LineOfSight', 0)
+            if los["type"] == "lapis_block" and los["inRange"]:
+                logging.error('Not an error: The agent can hit in the proper situation. Remove this message if it works.')
+            else: action_command = 'jump 1'
+        
+        super(Agent,self).perform_action(action_command, is_train)
+
     def _manual_reward_and_terminal(self, action_command: str, reward: float, terminal: bool, state: np.ndarray,
                                     world_state) -> \
             Tuple[float, bool, np.ndarray, bool, bool]:  # returns: reward, terminal, state, timeout, success
-        msg = world_state.observations[-1].text
-        observations = json.loads(msg)
-        grid = observations.get(u'floor3x3', 0)
-        yaw = super(Agent, self)._get_direction_from_yaw(observations.get(u'Yaw', 0))
+        del world_state
 
-        # Check if the agent is facing the block
-        # And If the agent executed action 'attack 1', the agent succeeded
-        if (grid[16] == u'lapis_block' and yaw == 'south' and action_command == 'attack 1'):
+        # If the agent executed action 'attack 1', the agent succeeded
+        if action_command == 'attack 1':
             return self.reward_from_success, True, state, False, True
 
         # Since basic agents don't have the notion of time, hence death due to timeout breaks the markovian assumption
