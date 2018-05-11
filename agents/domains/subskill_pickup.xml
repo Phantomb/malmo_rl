@@ -34,34 +34,44 @@
   </ServerSection>
 
   <AgentSection mode="Survival">
-      <Name>Agent</Name>
+    <Name>Agent</Name>
     <AgentStart>
-        <Placement pitch="0" x="2.5" y="227.0" yaw="0.0" z="2.5"/>
+      <Placement pitch="0" x="2.5" y="227.0" yaw="0.0" z="2.5"/>
     </AgentStart>
     <AgentHandlers>
-        <ObservationFromGrid>
-            <Grid name="floor3x3">
-                <min x="-1" y="-1" z="-1"/>
-                <max x="1" y="1" z="1"/>
-            </Grid>
-        </ObservationFromGrid>
-        <ChatCommands/>
+      <ObservationFromGrid>
+        <Grid name="floor3x3">
+          <min x="-1" y="-1" z="-1"/>
+          <max x="1" y="1" z="1"/>
+        </Grid>
+      </ObservationFromGrid>
+      <ChatCommands/>
       <VideoProducer want_depth="false">
         <Width>800</Width>
         <Height>600</Height>
       </VideoProducer>
       <ObservationFromFullStats />
+      <!-- <DiscreteMovementCommands>
+        <ModifierList type="deny-list">
+          <command>attack</command>
+        </ModifierList>
+      </DiscreteMovementCommands>
+      <ContinuousMovementCommands>
+        <ModifierList type="allow-list">
+          <command>attack</command>
+        </ModifierList>
+      </ContinuousMovementCommands> -->
       <DiscreteMovementCommands autoFall="true"/>
-        <RewardForMissionEnd rewardForDeath="-10000">
-            <Reward description="found_goal" reward="20"/>
-            <Reward description="command_quota_reached" reward="-5"/>
-        </RewardForMissionEnd>
-        <RewardForSendingCommand reward="-1"/>
-        <AgentQuitFromCollectingItem>
-            <Item type="gold_block" description="found_goal"/>
-        </AgentQuitFromCollectingItem>
-        <!-- episode length is 30 for single DSNs, 60 for 2-room, 100 for 3-room -->
-        <AgentQuitFromReachingCommandQuota description="command_quota_reached" total="30"/>
+      <RewardForMissionEnd rewardForDeath="-10000">
+          <Reward description="found_goal" reward="20"/>
+          <Reward description="command_quota_reached" reward="-5"/>
+      </RewardForMissionEnd>
+      <RewardForSendingCommand reward="-1"/>
+      <AgentQuitFromCollectingItem>
+          <Item type="gold_block" description="found_goal"/>
+      </AgentQuitFromCollectingItem>
+      <!-- episode length is 30 for single DSNs, 60 for 2-room, 100 for 3-room -->
+      <AgentQuitFromReachingCommandQuota description="command_quota_reached" total="30"/>
     </AgentHandlers>
   </AgentSection>
 </Mission>
