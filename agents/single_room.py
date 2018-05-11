@@ -17,7 +17,7 @@ class Agent(BaseAgent):
 
         self.supported_actions = [
             'move 1',
-            'move -1',
+            # 'move -1',
             'turn -1',
             'turn 1'
         ]
