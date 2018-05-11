@@ -66,7 +66,7 @@ class Agent(BaseAgent):
                 logging.error('Not an error: The agent can discard in the proper situation. Remove this message if it works.')
             else: action_command = 'jump 1'
 
-        super(Agent,self).perform_action(action_command, is_train)
+        return super(Agent,self).perform_action(action_command, is_train)
 
     def _manual_reward_and_terminal(self, action_command: str, reward: float, terminal: bool, state: np.ndarray,
                                     world_state) -> \
