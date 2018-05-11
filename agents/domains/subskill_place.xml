@@ -58,17 +58,18 @@
         <ModifierList type="allow-list">
           <command>discardCurrentItem</command>
         </ModifierList>
-      </ContinuousMovementCommands>
-        <RewardForMissionEnd rewardForDeath="-10000">
-            <!-- <Reward description="found_goal" reward="20"/> -->
-            <Reward description="command_quota_reached" reward="-5"/>
-        </RewardForMissionEnd>
-        <RewardForSendingCommand reward="-1"/>
-        <!-- <AgentQuitFromTouchingBlockType>
-            <Block type="gold_block" description="found_goal"/>
-        </AgentQuitFromTouchingBlockType> -->
-        <!-- episode length is 30 for single DSNs, 60 for 2-room, 100 for 3-room -->
-        <AgentQuitFromReachingCommandQuota description="command_quota_reached" total="30"/>
+      </InventoryCommands>
+      <ContinuousMovementCommands />
+      <RewardForMissionEnd rewardForDeath="-10000">
+          <!-- <Reward description="found_goal" reward="20"/> -->
+          <Reward description="command_quota_reached" reward="-5"/>
+      </RewardForMissionEnd>
+      <RewardForSendingCommand reward="-1"/>
+      <!-- <AgentQuitFromTouchingBlockType>
+          <Block type="gold_block" description="found_goal"/>
+      </AgentQuitFromTouchingBlockType> -->
+      <!-- episode length is 30 for single DSNs, 60 for 2-room, 100 for 3-room -->
+      <AgentQuitFromReachingCommandQuota description="command_quota_reached" total="30"/>
     </AgentHandlers>
   </AgentSection>
 </Mission>
