@@ -19,7 +19,7 @@ parser.add_argument('--image_height', type=int, default=84)
 parser.add_argument('--retain_rgb', default=False, action='store_true')
 parser.add_argument('--no_visualization', default=False, action='store_true',
                     help='When flag exists, will not plot visualizations.')
-parser.add_argument('--visualization_frequency', default=10, type=int,
+parser.add_argument('--visualization_frequency', default=1, type=int,
                     help='How often to plot visualizations.')
 parser.add_argument('--graph_moving_average_length', default=5, type=int,
                     help='Graphs plotted using a moving average over the last N points.')
