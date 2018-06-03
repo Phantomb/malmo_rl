@@ -58,11 +58,11 @@ I urge users to submit issues, bug reports and fixes to help make this better fo
 To cite this repository in publications:
 ```
 @misc{malmo_rl,
-  author = {Chen Tessler},
+  author = {Chen Tessler, Paolo de Heer},
   title = {Malmo Reinforcement Learning Environment},
   year = {2018},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{https://github.com/tesslerc/malmo_rl/}},
+  howpublished = {\url{https://github.com/Phantomb/malmo_rl/}},
 }
 ```
