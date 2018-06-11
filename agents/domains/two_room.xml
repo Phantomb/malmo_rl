@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Mission xmlns="http://ProjectMalmo.microsoft.com">
+  <About>
+    <Summary>hierarchical - multiple skills</Summary>
+  </About>
+
+  <ModSettings>
+      <MsPerTick>25</MsPerTick>
+    <PrioritiseOffscreenRendering>true</PrioritiseOffscreenRendering>
+  </ModSettings>
+
+  <ServerSection>
+      <ServerInitialConditions>
+        <Time>
+          <StartTime>6000</StartTime>
+          <AllowPassageOfTime>false</AllowPassageOfTime>
+        </Time>
+        <Weather>clear</Weather>
+        <AllowSpawning>false</AllowSpawning>
+       </ServerInitialConditions>
+    <ServerHandlers>
+      <FlatWorldGenerator destroyAfterUse="true" forceReset="false" generatorString="3;7,220*1,5*3,2;3;,biome_1" seed=""/>
+      <!-- START single_room -->
+      <ClassroomDecorator seed="__SEED__">
+        <specification>
+          <width>7</width>
+          <height>7</height>
+          <length>7</length>
+          <pathLength>0</pathLength>
+          <divisions>
+            <southNorth>0</southNorth>
+            <eastWest>0</eastWest>
+            <aboveBelow>0</aboveBelow>
+          </divisions>
+          <horizontalObstacles>
+            <gap>0</gap>
+            <bridge>0</bridge>
+            <door>0</door>
+            <puzzle>0</puzzle>
+            <jump>0</jump>
+          </horizontalObstacles>
+          <verticalObstacles>
+            <stairs>0</stairs>
+            <ladder>0</ladder>
+            <jump>0</jump>
+          </verticalObstacles>
+          <hintLikelihood>1</hintLikelihood>
+        </specification>
+      </ClassroomDecorator>
+      <!-- END single_room -->
+      
+      <!-- START subskill_attack -->
+      <DrawingDecorator>
+        <!-- RoomBase -->
+        <DrawCuboid type="bedrock" x1="-5" x2="5" y1="226" y2="236" z1="-5" z2="6"/>
+        <DrawCuboid type="air" x1="-4" x2="4" y1="227" y2="236" z1="-4" z2="4"/>
+
+        <!-- The target mob to attack -->
+        <DrawEntity type="PigZombie" x="2.5" y="227" z="2.5" />
+      </DrawingDecorator>
+      <!-- END subskill_attack -->
+
+      <ServerQuitWhenAnyAgentFinishes />
+    </ServerHandlers>
+  </ServerSection>
+
+  <AgentSection mode="Survival">
+      <Name>Agent</Name>
+    <AgentStart>
+        <Placement pitch="0" x="0.5" y="227.0" yaw="0.0" z="0.5"/>
+    </AgentStart>
+    <AgentHandlers>
+        <ObservationFromGrid>
+            <Grid name="floor3x3">
+                <min x="-1" y="-1" z="-1"/>
+                <max x="1" y="1" z="1"/>
+            </Grid>
+        </ObservationFromGrid>
+        <ChatCommands/>
+      <VideoProducer want_depth="false">
+        <Width>800</Width>
+        <Height>600</Height>
+      </VideoProducer>
+      <ObservationFromFullStats />
+      <ObservationFromRay/>
+
+      <!-- Start Movement Command Section:  -->
+      <!-- Only discrete version: (so it allows attack 1) -->
+      <DiscreteMovementCommands autoFall="true"/>
+
+        <RewardForMissionEnd rewardForDeath="-10000">
+            <!--  single_room -->
+            <Reward description="found_goal" reward="80"/> 
+            <Reward description="command_quota_reached" reward="-5"/>
+        </RewardForMissionEnd>
+        <RewardForSendingCommand reward="-1"/>
+        <!--  subskill_attack -->
+        <!-- <RewardForDamagingEntity>
+          <Mob type="PigZombie" reward="0"/>
+        </RewardForDamagingEntity> -->
+        <!--  single_room -->
+        <AgentQuitFromTouchingBlockType>
+            <Block type="gold_block" description="found_goal"/>
+        </AgentQuitFromTouchingBlockType>
+        <!-- episode length is 30 for single DSNs, 60 for 2-room, 100 for 3-room -->
+        <AgentQuitFromReachingCommandQuota description="command_quota_reached" total="70"/>
+    </AgentHandlers>
+  </AgentSection>
+</Mission>
