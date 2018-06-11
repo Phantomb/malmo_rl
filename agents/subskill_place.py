@@ -57,7 +57,7 @@ class Agent(BaseAgent):
 
         if action_command == 'discardCurrentItem':
             # Only allow discarding if we are at the goal
-            world_state = self.agent_host.peekWorldState()
+            world_state = self.prev_state #self.agent_host.peekWorldState()
             observations = json.loads(world_state.observations[-1].text)
             grid = observations.get(u'floor3x3', 0)
             yaw = super(Agent, self)._get_direction_from_yaw(observations.get(u'Yaw', 0))
@@ -71,7 +71,7 @@ class Agent(BaseAgent):
     def _manual_reward_and_terminal(self, action_command: str, reward: float, terminal: bool, state: np.ndarray,
                                     world_state) -> \
             Tuple[float, bool, np.ndarray, bool, bool]:  # returns: reward, terminal, state, timeout, success
-        del world_state
+        self.prev_state = world_state
         
         # If the agent executed action 'discardCurrentItem', the agent succeeded
         if action_command == 'discardCurrentItem':

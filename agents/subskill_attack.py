@@ -63,22 +63,25 @@ class Agent(BaseAgent):
             if los[u'type'] == "PigZombie" and los[u'inRange']:
                 logging.error('Not an error: The agent can hit in the proper situation. Remove this message if it works.')
 
-                # original super.perform_action code pasted here and edited since we need to execute two consecutive commands
-                number_of_attempts = 0
-                logging.debug('Agent[' + str(self.agent_index) + ']: received command ' + action_command)
-                while True:
-                    self.agent_host.sendCommand(action_command)
-                    self.agent_host.sendCommand('attack 0')
-                    reward, terminal, state, world_state, action_succeeded = self._get_new_state(False)
-                    if action_succeeded:
-                        return self._manual_reward_and_terminal(action_command, reward, terminal, state, world_state)
+                # if only discretemovement (see xml):
+                return super(Agent,self).perform_action(action_command, is_train)
+                # else if hybrid movement (see xml):
+                # # original super.perform_action code pasted here and edited since we need to execute two consecutive commands
+                # number_of_attempts = 0
+                # logging.debug('Agent[' + str(self.agent_index) + ']: received command ' + action_command)
+                # while True:
+                #     self.agent_host.sendCommand(action_command)
+                #     self.agent_host.sendCommand('attack 0')
+                #     reward, terminal, state, world_state, action_succeeded = self._get_new_state(False)
+                #     if action_succeeded:
+                #         return self._manual_reward_and_terminal(action_command, reward, terminal, state, world_state)
 
-                    number_of_attempts += 1
-                    time.sleep(self.tick_time / 1000.0)
-                    if number_of_attempts >= 100:
-                        logging.error('Agent[' + str(self.agent_index) + ']: Failed to send action.')
-                        self.game_running = False
-                        return 0, True, np.empty(0), True, False
+                #     number_of_attempts += 1
+                #     time.sleep(self.tick_time / 1000.0)
+                #     if number_of_attempts >= 100:
+                #         logging.error('Agent[' + str(self.agent_index) + ']: Failed to send action.')
+                #         self.game_running = False
+                #         return 0, True, np.empty(0), True, False
 
             else:
                 action_command = 'jump 1' # if it's not allowed, send 'jump 1' as a no-op action, so it still 'costs' the agent a command
@@ -91,7 +94,7 @@ class Agent(BaseAgent):
             Tuple[float, bool, np.ndarray, bool, bool]:  # returns: reward, terminal, state, timeout, success
         self.prev_state = world_state
         
-        if reward > 0:
+        if reward > 0 or action_command == 'attack 1':
             # Attacked target successfully.
             return self.reward_from_success, True, state, False, True
 

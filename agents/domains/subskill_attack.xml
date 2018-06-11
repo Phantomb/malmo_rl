@@ -52,7 +52,13 @@
       </VideoProducer>
       <ObservationFromFullStats />
       <ObservationFromRay/>
-      <DiscreteMovementCommands autoFall="true">
+
+      <!-- Start Movement Command Section:  -->
+      <!-- Only discrete version: (so it allows attack 1) -->
+      <DiscreteMovementCommands autoFall="true"/>
+
+      <!-- Hybrid version of discrete and continuous: -->
+      <!-- <DiscreteMovementCommands autoFall="true">
         <ModifierList type="deny-list">
           <command>attack</command>
         </ModifierList>
@@ -61,8 +67,9 @@
         <ModifierList type="allow-list">
           <command>attack</command>
         </ModifierList>
-      </ContinuousMovementCommands>
-      <!-- <DiscreteMovementCommands autoFall="true"/> -->
+      </ContinuousMovementCommands> -->
+      <!-- End movement command section ^ -->
+
         <RewardForMissionEnd rewardForDeath="-10000">
             <!-- <Reward description="found_goal" reward="20"/> -->
             <Reward description="command_quota_reached" reward="-5"/>

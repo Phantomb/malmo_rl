@@ -58,7 +58,7 @@ class Agent(BaseAgent):
 
         if action_command == 'attack 1':
             # Only allow an attack if we target the lapis block
-            world_state = self.agent_host.peekWorldState()
+            world_state = self.prev_state #self.agent_host.peekWorldState()
             los = json.loads(world_state.observations[-1].text).get(u'LineOfSight', 0)
             if los["type"] == "lapis_block" and los["inRange"]:
                 logging.error('Not an error: The agent can hit in the proper situation. Remove this message if it works.')
@@ -69,7 +69,7 @@ class Agent(BaseAgent):
     def _manual_reward_and_terminal(self, action_command: str, reward: float, terminal: bool, state: np.ndarray,
                                     world_state) -> \
             Tuple[float, bool, np.ndarray, bool, bool]:  # returns: reward, terminal, state, timeout, success
-        del world_state
+        self.prev_state = world_state
 
         # If the agent executed action 'attack 1', the agent succeeded
         if action_command == 'attack 1':
