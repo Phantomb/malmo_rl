@@ -25,9 +25,13 @@ class Agent(BaseAgent):
             'turn -1',
             'turn 1',
             'attack 1',
-            'subskill_attack',
+            'subskill_attack', # <- disable these if running non-hierarchical
             'single_room',
         ]
+        if params.policy == 'hdrln':
+            self.supported_actions += [
+                'subskill_attack',
+                'single_room',]
 
     def _restart_world(self, is_train: bool) -> None:
         del is_train
@@ -104,7 +108,7 @@ class Agent(BaseAgent):
                     break
             self.agent_host.sendCommand('chat /tp Cristina ' + str(x) + ' ' + str(y) + ' ' + str(z) + ' ' + str(yaw) + ' 0.0')
 
-        if reward > 0:
+        elif reward > 0:
             # Reached goal block successfully. (2nd subskill)
             return self.reward_from_success, True, state, False, True
 
