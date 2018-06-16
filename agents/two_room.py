@@ -25,8 +25,6 @@ class Agent(BaseAgent):
             'turn -1',
             'turn 1',
             'attack 1',
-            'subskill_attack', # <- disable these if running non-hierarchical
-            'single_room',
         ]
         if params.policy == 'hdrln':
             self.supported_actions += [
@@ -49,7 +47,6 @@ class Agent(BaseAgent):
         with open(mission_file, 'r') as f:
             logging.debug('Agent[' + str(self.agent_index) + ']: Loading mission from %s.', mission_file)
             mission_xml = f.read()
-
             success = False
             while not success:
                 mission = self._load_mission_from_xml(mission_xml)
@@ -59,6 +56,11 @@ class Agent(BaseAgent):
                 success = self._wait_for_mission_to_begin()
 
             self.game_running = True
+        
+        self.agent_host.sendCommand('chat /tp Agent ' + str(x) + ' ' + str(y) + ' ' + str(z) + ' ' + str(yaw) + ' ' + str(pitch))
+
+        logging.info('Restarting at ' + str(x) + ' ' + str(y) + ' ' + str(z) + ' ' + str(yaw) + ' ' + str(pitch))
+        time.sleep(2)
 
     def perform_action(self, action_command: str, is_train: bool) -> Tuple[float, bool, np.ndarray, bool, bool]:
         # overload super's perform_action() to check for subskill and attack actions
@@ -97,19 +99,22 @@ class Agent(BaseAgent):
 
         if action_command == 'attack 1':
             # Attacked the NPC successfuly (1st subskill), teleport agent to other room
-
+            
             y = 55.0
             yaw = (float)(random.randint(0, 3) * 90)
-            while True:
+            #while True:
                 # Ensure that we don't start right on the block.
-                x = random.randint(0, 6) + 0.5
-                z = random.randint(0, 6) + 0.5
-                if x != 2.5 or z != 5.5:
-                    break
-            self.agent_host.sendCommand('chat /tp Cristina ' + str(x) + ' ' + str(y) + ' ' + str(z) + ' ' + str(yaw) + ' 0.0')
+            x = random.randint(0, 6) + 0.5
+            z = random.randint(0, 6) + 0.5
+            #    if x != 2.5 or z != 5.5:
+            #        break
+            self.agent_host.sendCommand('chat /tp Agent ' + str(x) + ' ' + str(y) + ' ' + str(z) + ' ' + str(yaw) + ' 0.0')
+            time.sleep(5)
+            logging.info('Attacking NPC. Tried to teleport to '+ str(x) + ' ' + str(y) + ' ' + str(z) + ' ' + str(yaw) + ' 0.0')
 
         elif reward > 0:
             # Reached goal block successfully. (2nd subskill)
+            logging.info('Successfully reached the final goal block!')
             return self.reward_from_success, True, state, False, True
 
         # Since basic agents don't have the notion of time, hence death due to timeout breaks the markovian assumption
