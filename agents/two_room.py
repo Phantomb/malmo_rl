@@ -79,16 +79,53 @@ class Agent(BaseAgent):
         elif action_command == 'attack 1':
             # Only allow an attack if we target the zombiepigman
             world_state = self.prev_state #self.agent_host.peekWorldState()
+
+            # if world_state is not None:
+            #     if world_state.is_mission_running and len(world_state.observations) > 0:
             los = json.loads(world_state.observations[-1].text).get(u'LineOfSight', 0)
             if los[u'type'] == "PigZombie" and los[u'inRange']:
-
-                # if only discretemovement (see attack xml):
-                return super(Agent,self).perform_action(action_command, is_train)
-                # else if hybrid movement: (see attack xml)
-
+                result = super(Agent,self).perform_action(action_command, is_train) #<- this is for discrete. Change this if continuous  
+                # time.sleep(5)
+                return result
             else:
                 action_command = 'jump 1' # if it's not allowed, send 'jump 1' as a no-op action, so it still 'costs' the agent a command
                 return super(Agent,self).perform_action(action_command, is_train)
+                
+            #     else: 
+            #         logging.error('Received invalid world_state after action attack 1')
+            #         action_command = 'jump 1' # if it's not allowed, send 'jump 1' as a no-op action, so it still 'costs' the agent a command
+            #         return super(Agent,self).perform_action(action_command, is_train)
+            # else: 
+            #     logging.error('Received NONE world_state after action attack 1')
+            #     action_command = 'jump 1' # if it's not allowed, send 'jump 1' as a no-op action, so it still 'costs' the agent a command
+            #     return super(Agent,self).perform_action(action_command, is_train)
+
+        # ### ATOMIC ACTIONS:
+        # elif action_command == 'attack 1':
+        #     # Only allow an attack if we target the zombiepigman
+        #     world_state = self.prev_state #self.agent_host.peekWorldState()
+
+        #     # if world_state is not None:
+        #     #     if world_state.is_mission_running and len(world_state.observations) > 0:
+        #             los = json.loads(world_state.observations[-1].text).get(u'LineOfSight', 0)
+        #             if los[u'type'] == "PigZombie" and los[u'inRange']:
+        #                 result = super(Agent,self).perform_action(action_command, is_train) #<- this is for discrete. Change this if continuous  
+        #                 # time.sleep(5)
+        #                 return result
+        #             else:
+        #                 action_command = 'jump 1' # if it's not allowed, send 'jump 1' as a no-op action, so it still 'costs' the agent a command
+        #                 return super(Agent,self).perform_action(action_command, is_train)
+                
+        #     #     else: 
+        #     #         logging.error('Received invalid world_state after action attack 1')
+        #     #         action_command = 'jump 1' # if it's not allowed, send 'jump 1' as a no-op action, so it still 'costs' the agent a command
+        #     #         return super(Agent,self).perform_action(action_command, is_train)
+        #     # else: 
+        #     #     logging.error('Received NONE world_state after action attack 1')
+        #     #     action_command = 'jump 1' # if it's not allowed, send 'jump 1' as a no-op action, so it still 'costs' the agent a command
+        #     #     return super(Agent,self).perform_action(action_command, is_train)
+
+            
 
         else: return super(Agent,self).perform_action(action_command, is_train)
     
@@ -102,12 +139,12 @@ class Agent(BaseAgent):
             
             y = 55.0
             yaw = (float)(random.randint(0, 3) * 90)
-            #while True:
+            while True:
                 # Ensure that we don't start right on the block.
-            x = random.randint(0, 6) + 0.5
-            z = random.randint(0, 6) + 0.5
-            #    if x != 2.5 or z != 5.5:
-            #        break
+                x = random.randint(0, 6) + 0.5
+                z = random.randint(0, 6) + 0.5
+                if x != 2.5 or z != 5.5:
+                    break
             self.agent_host.sendCommand('chat /tp Agent ' + str(x) + ' ' + str(y) + ' ' + str(z) + ' ' + str(yaw) + ' 0.0')
             time.sleep(5)
             logging.info('Attacking NPC. Tried to teleport to '+ str(x) + ' ' + str(y) + ' ' + str(z) + ' ' + str(yaw) + ' 0.0')
